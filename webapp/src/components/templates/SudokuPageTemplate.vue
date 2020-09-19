@@ -1,7 +1,13 @@
 <template>
   <div class="page-content">
+    <div class="title-container">
+      <slot name="title"></slot>
+    </div>
     <div class="sudoku-grid-container">
       <slot name="sudokuGrid"></slot>
+    </div>
+    <div class="details-container">
+      <slot name="details"></slot>
     </div>
     <div class="main-button-container">
       <slot name="mainButton"></slot>
@@ -20,14 +26,19 @@ export default class SudokuPageTemplate extends Vue {}
   display: flex;
   flex-direction: column;
 }
+.title-container {
+  margin: 16px 0;
+}
 .sudoku-grid-container {
-  flex: 2;
-  margin: auto;
+  margin: 32px auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
+.details-container {
+  margin: 16px 0;
+}
 .main-button-container {
-  flex: 1;
+  margin: 16px 0;
 }
 </style>

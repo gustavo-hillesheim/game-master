@@ -4,7 +4,7 @@
       <SudokuCell
         v-for="x in 3"
         :key="x"
-        @input="$emit('cell-change', { x, y, value: $event })"
+        @input="$emit('cell-change', { x: x - 1, y: y - 1, value: $event })"
       />
     </div>
   </div>
