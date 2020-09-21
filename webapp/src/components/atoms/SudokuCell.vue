@@ -10,11 +10,11 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
 export default class SudokuCell extends Vue {
-  private internalValue: number = null;
+  @Prop() private value!: number;
 
   setValue(value: number | string): void {
     if (typeof value === "string") {
@@ -22,14 +22,9 @@ export default class SudokuCell extends Vue {
     }
     value = Math.max(value as number, 1);
     value = Math.min(value as number, 9);
-
-    this.internalValue = value;
+    this.value = value;
     this.$forceUpdate();
     this.$emit("input", value);
-  }
-
-  get value(): number {
-    return this.internalValue;
   }
 }
 </script>

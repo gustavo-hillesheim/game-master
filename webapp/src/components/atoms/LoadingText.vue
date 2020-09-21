@@ -7,7 +7,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 @Component
 export default class LoadingText extends Vue {
   @Prop({ required: true }) private text!: string;
-  @Prop() private ellipsisDuration = 1;
+  @Prop({ default: 1 }) private ellipsisDuration!: number;
 
   private loadingIntervalId: number;
   private loadingEllipsis = "";

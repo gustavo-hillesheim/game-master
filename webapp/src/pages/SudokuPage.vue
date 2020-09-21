@@ -50,17 +50,9 @@ export default class SudokuPage extends Vue {
         solved
           .reduce((row1, row2) => [...row1, ...row2])
           .forEach((value, index) => {
-            const y = index % 9;
-            const x = index - y * 9;
-            const regionX = Math.floor(x / 3);
-            const regionY = Math.floor(y / 3);
-            const cellX = x - regionX * 3;
-            const cellY = y - regionY * 3;
-            this.grid.setCellValue(
-              { x: cellX, y: cellY, value },
-              regionX,
-              regionY
-            );
+            const x = index % 9;
+            const y = (index - x) / 9;
+            this.grid.setCellValue(x, y, value);
           });
       });
   }

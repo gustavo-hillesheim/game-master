@@ -4,7 +4,8 @@
       <SudokuRegion
         v-for="x in 3"
         :key="x"
-        @cell-change="setCellValue($event, x - 1, y - 1)"
+        :value="regionValue(x, y)"
+        @cell-change="setValueByRegion($event.value, $event.x, $event.y, x, y)"
       />
     </div>
   </div>
@@ -22,21 +23,47 @@ export default class SudokuGrid extends Vue {
   private cellMargin = "4px";
 
   getValue(): number[][] {
-    return this.sudokuValue.map(row => [...row]);
+    return this.sudokuValue.map((row) => [...row]);
   }
 
   private createSudoku(): number[][] {
     return new Array(9).fill(null).map(() => new Array(9));
   }
 
-  setCellValue(
-    { x: cellX, y: cellY, value }: { x: number; y: number; value: number },
-    regionX?: number,
-    regionY?: number
+  regionValue(x: number, y: number): number[][] {
+    const initialX = (x - 1) * 3;
+    const finalX = x * 3 - 1;
+    const initialY = (y - 1) * 3;
+    const finalY = y * 3 - 1;
+
+    const regionValue: number[][] = [];
+    for (let cellY = initialY; cellY <= finalY; cellY++) {
+      const rowValue = [];
+      for (let cellX = initialX; cellX <= finalX; cellX++) {
+        rowValue.push(
+          this.sudokuValue.slice(cellY, cellY + 1)[0].slice(cellX, cellX + 1)[0]
+        );
+      }
+      regionValue.push(rowValue);
+    }
+
+    return regionValue;
+  }
+
+  private setValueByRegion(
+    value: number,
+    cellX: number,
+    cellY: number,
+    regionX: number,
+    regionY: number
   ): void {
-    const x = cellX + regionX * 3;
-    const y = cellY + regionY * 3;
-    this.sudokuValue[y].splice(x, 1, value);
+    cellX += (regionX - 1) * 3;
+    cellY += (regionY - 1) * 3;
+    this.setCellValue(cellX, cellY, value);
+  }
+
+  setCellValue(x: number, y: number, value: number): void {
+    this.sudokuValue.slice(y, y + 1)[0].splice(x, 1, value);
   }
 
   cellStyle(x: number, y: number): { [key: string]: number | string | null } {
