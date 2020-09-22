@@ -42,12 +42,21 @@ import ErrorText from "../components/atoms/ErrorText.vue";
 export default class SudokuPage extends Vue {
   @Ref("grid") grid!: SudokuGrid;
   private isSolving = false;
-  private errorMessage: string;
+  private errorMessage: string = null;
 
   solve(): void {
     const sudoku = this.grid.getValue();
-    this.isSolving = true;
+    const errors = this.grid.getErrors();
     this.errorMessage = null;
+    console.log(errors);
+
+    if (errors && errors.length) {
+      this.errorMessage =
+        "Não é possível resolver o sudoku informado pois ele possui erros";
+      return;
+    }
+
+    this.isSolving = true;
     SudokuService.getInstance()
       .solve(sudoku)
       .then((solved) => {

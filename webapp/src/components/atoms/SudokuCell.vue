@@ -4,8 +4,9 @@
       type="number"
       min="1"
       max="9"
+      :class="cellClass"
       :value="value.value"
-      @input="setValue($event.target.value)"
+      @input="setValue($event.target.value, true)"
     />
   </div>
 </template>
@@ -18,15 +19,24 @@ import { Cell } from "@/model/sudoku.model";
 export default class SudokuCell extends Vue {
   @Prop() private value!: Cell;
 
-  setValue(value: number | string): void {
+  setValue(value: number | string, userInput = false): void {
     if (typeof value === "string") {
       value = parseInt(value[value.length - 1]);
     }
     value = Math.max(value as number, 1);
     value = Math.min(value as number, 9);
     this.value.value = value;
+    if (value && userInput) {
+      Vue.set(this.value, "modifier", "user-input");
+    } else if (!value) {
+      Vue.set(this.value, "modifier", null);
+    }
     this.$forceUpdate();
     this.$emit("input", value);
+  }
+
+  get cellClass(): string[] {
+    return this.value.modifiers;
   }
 }
 </script>
@@ -55,5 +65,11 @@ input:focus {
     rgba(63, 247, 148, 0.5) 0%,
     rgba(117, 255, 204, 0.3) 100%
   );
+}
+input.user-input {
+  background-color: rgba(200, 200, 200, 0.5);
+}
+input.error {
+  background-color: rgba(255, 49, 49, 0.5);
 }
 </style>

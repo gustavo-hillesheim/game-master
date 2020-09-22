@@ -16,10 +16,16 @@ import { Component, Vue } from "vue-property-decorator";
 
 import SudokuRegion from "./SudokuRegion.vue";
 
+import { Square, Sudoku, SudokuVerifier } from "../../service/sudoku";
+
+const sudokuVerifier = new SudokuVerifier();
+
 function defaultGridValue(): Cell[][] {
   return new Array(9)
     .fill(null)
-    .map(() => new Array(9).fill(null).map((__) => ({ value: null })));
+    .map(() =>
+      new Array(9).fill(null).map((_) => ({ value: null, modifiers: [] }))
+    );
 }
 
 @Component({
@@ -27,10 +33,15 @@ function defaultGridValue(): Cell[][] {
 })
 export default class SudokuGrid extends Vue {
   private sudokuValue: Cell[][] = defaultGridValue();
+  private erroredSquares: Square[] = [];
   private cellMargin = "4px";
 
   getValue(): Cell[][] {
     return this.sudokuValue.map((row) => [...row]);
+  }
+
+  getErrors(): Square[] {
+    return this.erroredSquares.map((square) => ({ ...square } as Square));
   }
 
   regionValue(x: number, y: number): Cell[][] {
@@ -67,6 +78,35 @@ export default class SudokuGrid extends Vue {
 
   setCellValue(x: number, y: number, value: number): void {
     this.sudokuValue[y][x].value = value;
+    this.verifyValidity();
+  }
+
+  setCellError({ x, y }: { x: number; y: number }): void {
+    this.sudokuValue[y][x].modifiers.push("error");
+  }
+
+  private verifyValidity(): void {
+    const sudokuNumbers = this.sudokuValue.map((row) =>
+      row.map((cell) => cell.value)
+    );
+    this.clearErrors();
+    this.erroredSquares = sudokuVerifier
+      .findErrors(new Sudoku(sudokuNumbers))
+      .filter((erroredSquare) => erroredSquare.value);
+
+    this.erroredSquares.forEach(this.setCellError);
+  }
+
+  private clearErrors(): void {
+    for (let x = 0; x < 9; x++) {
+      for (let y = 0; y < 9; y++) {
+        const cell = this.sudokuValue[y][x];
+        let errorIndex = 0;
+        while ((errorIndex = cell.modifiers.indexOf("error")) >= 0) {
+          cell.modifiers.splice(errorIndex, 1);
+        }
+      }
+    }
   }
 
   cellStyle(x: number, y: number): { [key: string]: number | string | null } {

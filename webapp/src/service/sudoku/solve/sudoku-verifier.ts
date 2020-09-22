@@ -1,32 +1,44 @@
-import { Square } from './../structure/square';
-import { Sudoku } from './../structure/sudoku';
-import { SquareGroup } from '../structure/square-group';
+import { Square } from "./../structure/square";
+import { Sudoku } from "./../structure/sudoku";
+import { SquareGroup } from "../structure/square-group";
 export class SudokuVerifier {
+  findErrors({ squares, grids, rows, columns }: Sudoku): Square[] {
+    const erroredSquares: Square[] = [
+      ...this.squaresWithoutValue(squares),
+      ...this.squaresWithRepeatedValueInGroups(grids),
+      ...this.squaresWithRepeatedValueInGroups(rows),
+      ...this.squaresWithRepeatedValueInGroups(columns),
+    ];
 
-  isSolved({ squares, grids, rows, columns }: Sudoku): boolean {
-
-    return !(this.squareWithoutValueExists(squares)
-      || grids.some(this.squareGroupRepeatValues)
-      || rows.some(this.squareGroupRepeatValues)
-      || columns.some(this.squareGroupRepeatValues));
+    return erroredSquares;
   }
 
-  private squareWithoutValueExists(squares: Square[]): boolean {
-    return !!squares.find(square => !square.value);
+  private squaresWithoutValue(squares: Square[]): Square[] {
+    return squares.filter((square) => !square.value);
   }
 
-  private squareGroupRepeatValues({ squares }: SquareGroup): boolean {
+  private squaresWithRepeatedValueInGroups(groups: SquareGroup[]): Square[] {
+    return groups
+      .map(this.squaresWithRepeatedValue)
+      .reduce((prev, next) => [...prev, ...next]);
+  }
 
-    const valuesAlreadySeen = new Set<number>();
+  private squaresWithRepeatedValue({ squares }: SquareGroup): Square[] {
+    const squaresByValue: { [key: number]: Square[] } = {};
 
     for (let i = 0; i < squares.length; i++) {
-
       const square = squares[i];
-      if (valuesAlreadySeen.has(square.value))
-        return true;
-      valuesAlreadySeen.add(square.value);
+      if (!squaresByValue[square.value]) {
+        squaresByValue[square.value] = [square];
+      } else {
+        squaresByValue[square.value].push(square);
+      }
     }
 
-    return false;
+    const squaresValues = Object.values(squaresByValue);
+
+    return squaresValues
+      .filter((squares) => squares.length > 1)
+      .reduce((prev, next) => [...prev, ...next], []);
   }
 }

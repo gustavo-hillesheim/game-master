@@ -26,11 +26,11 @@ export class SudokuService {
           row.squares.map((square) => square.value)
         );
 
-        const isSolved = new SudokuVerifier().isSolved(solvedSudoku);
-        if (isSolved) {
+        const sudokuErrors = new SudokuVerifier().findErrors(solvedSudoku);
+        if (!sudokuErrors || !sudokuErrors.length) {
           resolve(solvedSudokuGrid);
         } else {
-          reject();
+          reject(sudokuErrors);
         }
       }, 0);
     });

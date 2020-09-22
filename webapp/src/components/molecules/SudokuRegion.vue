@@ -19,7 +19,9 @@ import SudokuCell from "../atoms/SudokuCell.vue";
 function defaultRegionValue(): Cell[][] {
   return new Array(3)
     .fill(null)
-    .map((_) => new Array(3).fill(null).map((_) => ({ value: null })));
+    .map((_) =>
+      new Array(3).fill(null).map((_) => ({ value: null, modifiers: [] }))
+    );
 }
 
 @Component({ components: { SudokuCell } })
