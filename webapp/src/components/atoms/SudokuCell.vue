@@ -4,7 +4,7 @@
       type="number"
       min="1"
       max="9"
-      :value="value"
+      :value="value.value"
       @input="setValue($event.target.value)"
     />
   </div>
@@ -12,9 +12,11 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 
+import { Cell } from "@/model/sudoku.model";
+
 @Component
 export default class SudokuCell extends Vue {
-  @Prop() private value!: number;
+  @Prop() private value!: Cell;
 
   setValue(value: number | string): void {
     if (typeof value === "string") {
@@ -22,7 +24,7 @@ export default class SudokuCell extends Vue {
     }
     value = Math.max(value as number, 1);
     value = Math.min(value as number, 9);
-    this.value = value;
+    this.value.value = value;
     this.$forceUpdate();
     this.$emit("input", value);
   }

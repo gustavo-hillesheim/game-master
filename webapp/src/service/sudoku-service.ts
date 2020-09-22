@@ -1,4 +1,6 @@
+import { Cell } from "@/model/sudoku.model";
 import { SudokuSolver } from "./sudoku/solve/sudoku-solver";
+import { SudokuVerifier } from "./sudoku/solve/sudoku-verifier";
 import { Sudoku } from "./sudoku/structure/sudoku";
 import { SquarePossibilityManager } from "./sudoku/utils/square-possibility-manager";
 
@@ -8,13 +10,14 @@ export class SudokuService {
     return SudokuService.instance;
   }
 
-  solve(sudokuGrid: number[][]): Promise<number[][]> {
+  solve(sudokuGrid: Cell[][]): Promise<number[][]> {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        const sudokuArray = sudokuGrid.reduce((prev, next) => [
-          ...prev,
-          ...next,
-        ]);
+        const sudokuArray = sudokuGrid
+          .map((row) => {
+            return row.map((cell) => cell.value);
+          })
+          .reduce((prev, next) => [...prev, ...next]);
 
         const sudoku = new Sudoku(sudokuArray);
         new SquarePossibilityManager().calculateSquaresPossibilities(sudoku);
@@ -23,8 +26,13 @@ export class SudokuService {
           row.squares.map((square) => square.value)
         );
 
-        resolve(solvedSudokuGrid);
-      }, 2000);
+        const isSolved = new SudokuVerifier().isSolved(solvedSudoku);
+        if (isSolved) {
+          resolve(solvedSudokuGrid);
+        } else {
+          reject();
+        }
+      }, 0);
     });
   }
 }

@@ -11,32 +11,35 @@
   </div>
 </template>
 <script lang="ts">
+import { Cell } from "@/model/sudoku.model";
 import { Component, Vue } from "vue-property-decorator";
 
 import SudokuRegion from "./SudokuRegion.vue";
+
+function defaultGridValue(): Cell[][] {
+  return new Array(9)
+    .fill(null)
+    .map(() => new Array(9).fill(null).map((__) => ({ value: null })));
+}
 
 @Component({
   components: { SudokuRegion },
 })
 export default class SudokuGrid extends Vue {
-  private sudokuValue: number[][] = this.createSudoku();
+  private sudokuValue: Cell[][] = defaultGridValue();
   private cellMargin = "4px";
 
-  getValue(): number[][] {
+  getValue(): Cell[][] {
     return this.sudokuValue.map((row) => [...row]);
   }
 
-  private createSudoku(): number[][] {
-    return new Array(9).fill(null).map(() => new Array(9));
-  }
-
-  regionValue(x: number, y: number): number[][] {
+  regionValue(x: number, y: number): Cell[][] {
     const initialX = (x - 1) * 3;
     const finalX = x * 3 - 1;
     const initialY = (y - 1) * 3;
     const finalY = y * 3 - 1;
 
-    const regionValue: number[][] = [];
+    const regionValue: Cell[][] = [];
     for (let cellY = initialY; cellY <= finalY; cellY++) {
       const rowValue = [];
       for (let cellX = initialX; cellX <= finalX; cellX++) {
@@ -63,7 +66,7 @@ export default class SudokuGrid extends Vue {
   }
 
   setCellValue(x: number, y: number, value: number): void {
-    this.sudokuValue.slice(y, y + 1)[0].splice(x, 1, value);
+    this.sudokuValue[y][x].value = value;
   }
 
   cellStyle(x: number, y: number): { [key: string]: number | string | null } {
