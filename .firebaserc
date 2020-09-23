@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "projetos-5a02b"
+  },
+  "targets": {
+    "projetos-5a02b": {
+      "hosting": {
+        "gamemaster": [
+          "gamemaster-cb8de"
+        ]
+      }
+    }
+  }
+}
