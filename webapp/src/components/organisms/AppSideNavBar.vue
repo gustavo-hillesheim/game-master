@@ -13,8 +13,12 @@ import { NavItem } from "@/model/navigation.model";
   components: { AppNavList },
 })
 export default class AppSideNavBar extends Vue {
-  private color = "#787878";
+  private color = "#041229";
   private navItems: NavItem[] = [
+    {
+      label: "Início",
+      route: "/home",
+    },
     {
       label: "Sudoku",
       route: "/sudoku",
